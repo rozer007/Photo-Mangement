@@ -39,16 +39,14 @@ def create_database():
     """Create database tables"""
     Base.metadata.create_all(bind=engine)
 
-def test_connection():
-    """Test database connection"""
-    try:
-        with engine.connect() as connection:
-            result = connection
-            print(result)
-            print("✅ Database connection successful!")
-            return True
-    except Exception as e:
-        print(f"❌ Database connection failed: {e}")
-        return False
-
-test_connection()
+# def test_connection():
+#     """Test database connection"""
+#     try:
+#         with engine.connect() as connection:
+#             result = connection.execute("select version()")
+#             print(result)
+#             print("✅ Database connection successful!")
+#             return True
+#     except Exception as e:
+#         print(f"❌ Database connection failed: {e}")
+#         return False
