@@ -12,6 +12,7 @@ print(os.getcwd())
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 database.create_database()
 
 @app.post("/auth/register", response_model=schemas.UserOut)
@@ -31,11 +32,4 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Sessio
     token_data = {"sub": str(user.id)}
     access_token = auth_service.create_access_token(token_data)
     return schemas.Token(access_token=access_token, token_type="bearer")
-
-from . import dependencies
-
-
-@app.get("/try")
-def get_it():
-    return dependencies.get_current_user()
 
