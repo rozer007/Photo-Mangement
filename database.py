@@ -6,8 +6,8 @@ from sqlalchemy.pool import QueuePool
 import logging
 
 # Configure logging
-logging.basicConfig()
-logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+# logging.basicConfig()
+# logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 
 DATABASE_URL = "postgresql://postgres:Root@localhost:5432/management"

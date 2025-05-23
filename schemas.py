@@ -8,10 +8,15 @@ class UserBase(BaseModel):
     username: str
 
 class UserCreate(UserBase):
-    email: EmailStr
     password: str
-    username: str
-    is_photographer: Optional[bool] = False  # Allow user to register as Photographer
+    user_type: str
+
+    @validator('user_type')
+    def validate_user_type(cls, v):
+        if v!= "simple" or v!="photographer":
+            raise ValueError('User_type must be photographer or simple user')
+        return v
+    
     
     @validator('password')
     def validate_password(cls, v):
@@ -25,21 +30,27 @@ class UserCreate(UserBase):
             raise ValueError('Username must be at least 3 characters long')
         return v
     
-class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
-    username: Optional[str] = None
+class UserOut(UserBase):
+    id: int
+    username :str
+    class Config:
+        from_attribute = True
     
-    @validator('username')
-    def validate_username(cls, v):
-        if v is not None and len(v) < 3:
-            raise ValueError('Username must be at least 3 characters long')
-        return v
+# class UserUpdate(BaseModel):
+#     email: Optional[EmailStr] = None
+#     username: Optional[str] = None
+    
+#     @validator('username')
+#     def validate_username(cls, v):
+#         if v is not None and len(v) < 3:
+#             raise ValueError('Username must be at least 3 characters long')
+#         return v
 
-class UserPasswordUpdate(BaseModel):
-    new_password: str
+# class UserPasswordUpdate(BaseModel):
+#     new_password: str
     
-    @validator('new_password')
-    def validate_password(cls, v):
-        if len(v) < 6:
-            raise ValueError('Password must be at least 6 characters long')
-        return v
+#     @validator('new_password')
+#     def validate_password(cls, v):
+#         if len(v) < 6:
+#             raise ValueError('Password must be at least 6 characters long')
+#         return v
