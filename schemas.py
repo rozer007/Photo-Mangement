@@ -13,7 +13,7 @@ class UserCreate(UserBase):
 
     @validator('user_type')
     def validate_user_type(cls, v):
-        if v!= "simple" or v!="photographer":
+        if v!= "simple" and v!="photographer":
             raise ValueError('User_type must be photographer or simple user')
         return v
     
@@ -40,6 +40,14 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     
+class FollowOut(BaseModel):
+    id: int
+    user_id: int
+    photographer_id: int
+    class Config:
+        from_attribute = True
+
+
 # class UserUpdate(BaseModel):
 #     email: Optional[EmailStr] = None
 #     username: Optional[str] = None
