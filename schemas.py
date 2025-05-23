@@ -1,7 +1,7 @@
-from pydantic import BaseModel, EmailStr, validator # type: ignore
+from pydantic import BaseModel, EmailStr, validator 
 from typing import Optional
 from datetime import datetime
-# Hello
+
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -35,6 +35,10 @@ class UserOut(UserBase):
     username :str
     class Config:
         from_attribute = True
+    
+class Token(BaseModel):
+    access_token: str
+    token_type: str
     
 # class UserUpdate(BaseModel):
 #     email: Optional[EmailStr] = None

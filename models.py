@@ -1,15 +1,15 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, DateTime, Text, Enum, Float
-
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from database import Base
+from . import database
+
 import enum
 
 class UserType(str, enum.Enum):
     simple = "simple"
     photographer = "photographer"
 
-class User(Base):
+class User(database.Base):
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
