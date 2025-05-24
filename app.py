@@ -5,6 +5,7 @@ from . import database
 from .Api import auth_api
 from . import schemas,dependencies, database
 from .Crud import follow_crud
+from . import models
 
 app = FastAPI()
 
@@ -21,7 +22,10 @@ def follow_photographer(photographer_id: int, db: Session = Depends(database.get
 
 @app.delete("/unfollow/{photographer_id}", response_model=schemas.FollowOut)
 def unfollow_photographer(photographer_id: int, db: Session = Depends(database.get_db), current_user=Depends(dependencies.get_current_active_user)):
-    return follow_crud.unfollow_photographer(db, current_user.id, photographer_id)
+    un_followed = follow_crud.unfollow_photographer(db, current_user.id, photographer_id)
+    if not un_followed:
+            raise HTTPException(status_code=401, detail="Can't unfollow as you are not following this photographer")
+    return un_followed
 
 @app.get("/followers")
 def get_photographer_follower(db:Session = Depends(database.get_db), current_user=Depends(dependencies.get_current_active_user)):
@@ -36,3 +40,12 @@ def get_photographer_follower(db:Session = Depends(database.get_db), current_use
         return follow_crud.get_following(db,current_user.id)
     else:
         raise HTTPException(status_code=400, detail="Must be simple user")
+    
+@app.get('/try')
+def tryout(db:Session=Depends(database.get_db)):
+
+    statement = db.query(models.Follow).filter_by(id=2).first()
+    statement.user
+    statement.photographer
+
+    return statement
