@@ -6,6 +6,10 @@ def check_following(db:Session,user_id: int, photographer_id: int):
     user_exists = db.query(exists_query).scalar()
     return user_exists
 
+# def is_photographer(db: Session,photographer_id: int):
+
+# def is_simple_user(db: Session,photographer_id: int):
+
 def follow_photographer(db: Session, user_id: int, photographer_id: int):
     exist=check_following(db,user_id,photographer_id)
     if exist:
