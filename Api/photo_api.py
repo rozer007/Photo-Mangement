@@ -40,28 +40,28 @@ def delete_photo(photo_id: int, db: Session = Depends(database.get_db), current_
 
 @router.get("/feed", response_model=list[schemas.PhotoOut])
 def get_feed(db: Session = Depends(database.get_db), current_user=Depends(dependencies.get_current_active_user)):
-    if not current_user.user_type == 'simple':
-        raise HTTPException(status_code=403, detail="Must be simple user")
-    following = follow_crud.get_following(db, current_user.id)
-    photographer_ids = [f['photographer_id'] for f in following]
     photos = []
-    for pid in photographer_ids:
-        photos.extend(photo_crud.get_photos_by_owner(db, pid))
+    if current_user.user_type!='photographer':  # check if it the photographer
+    # showing photos only for the following photographer
+        following = follow_crud.get_following(db, current_user.id)
+        photographer_ids = [f['photographer_id'] for f in following]
+        for pid in photographer_ids:
+            photos.extend(photo_crud.get_photos_by_owner(db, pid))
+    else :
+        photos=photo_crud.get_photos_by_owner(db,current_user.id)
+    
+    if not len(photos):
+        raise HTTPException(status_code=404, detail="No feed/ photos")
     return photos
 
-    
-'''
 @router.get("/{photo_id}", response_model=schemas.PhotoOut)
-def get_photo(photo_id: int, db: Session = Depends(dependencies.get_db), current_user=Depends(dependencies.get_current_active_user)):
+def get_photo(photo_id: int, db: Session = Depends(database.get_db), current_user=Depends(dependencies.get_current_active_user)):
     photo = photo_crud.get_photo(db, photo_id)
     if not photo:
         raise HTTPException(status_code=404, detail="Photo not found")
     # Only allow if user follows the photographer
-    if photo.owner_id != current_user.id:
+    if photo.owner_id != current_user.id: # check if it the owner
         following = follow_crud.get_following(db, current_user.id)
-        if not any(f.photographer_id == photo.owner_id for f in following):
+        if not any(f['photographer_id'] == photo.owner_id for f in following):
             raise HTTPException(status_code=403, detail="Not allowed to view this photo")
     return photo
-
-
-'''

@@ -50,3 +50,24 @@ class Photo(database.Base):
     owner = relationship("User", back_populates="photos")
     # reviews = relationship("Review", back_populates="photo")
 
+
+class Share(database.Base):
+    __tablename__ = "shares"
+    id = Column(Integer, primary_key=True, index=True)
+    photo_id = Column(Integer, ForeignKey("photos.id"))
+    from_user_id = Column(Integer, ForeignKey("users.id"))
+    to_user_id = Column(Integer, ForeignKey("users.id"))
+    expiry = Column(DateTime)
+    link = Column(String)
+
+
+class Review(database.Base):
+    __tablename__ = "reviews"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    photo_id = Column(Integer, ForeignKey("photos.id"), nullable=True)
+    photographer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    rating = Column(Float)
+    comment = Column(Text)
+    # user = relationship("User", back_populates="reviews")
+    # photo = relationship("Photo", back_populates="reviews") 

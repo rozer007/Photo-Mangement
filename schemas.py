@@ -65,4 +65,49 @@ class PhotoOut(PhotoCreate):
         from_attribute = True
 
 
+class ShareOut(BaseModel):
+    id: int
+    photo_id: int
+    from_user_id: int
+    to_user_id: int
+    expiry: datetime
+    link: str
+    class Config:
+        from_attribute = True
+
+class ReviewCreate_Photo(BaseModel):
+    photo_id: int
+    rating: int
+
+    @validator('rating')
+    def validate_rating(cls, v):
+        if v<=0 or v>10:
+            raise ValueError('Rating must be between 1-10')
+        return v
+    
+    comment: Optional[str]
+
+class ReviewCreate_Photographer(BaseModel):
+
+    photographer_id:int
+    rating: float
+
+    @validator('rating')
+    def validate_rating(cls, v):
+        if v<=0 or v>10:
+            raise ValueError('Rating must be between 1-10')
+        return v
+    comment: Optional[str]
+
+class ReviewOut(BaseModel):
+    id: int
+    user_id: int
+    photo_id: Optional[int]
+    photographer_id: Optional[int]
+    rating: float
+    comment: Optional[str]
+    class Config:
+        from_attribute = True
+
+
 
