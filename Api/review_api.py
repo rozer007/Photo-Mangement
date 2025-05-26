@@ -59,8 +59,15 @@ def get_reviews_for_photo(photo_id: int, db: Session = Depends(database.get_db),
         if not photo_id in photos_id:
             raise HTTPException(status_code=403, detail="No such photo exist/Not following this photographer")
 
-    return review_crud.get_reviews_for_photo(db, photo_id,current_user)
+    return review_crud.get_reviews_for_photo(db, photo_id)
 
 @router.get("/photographer/{photographer_id}", response_model=list[schemas.ReviewOut])
 def get_reviews_for_photographer(photographer_id: int, db: Session = Depends(database.get_db),current_user=Depends(dependencies.get_current_active_user)):
+    if current_user.id!= photographer_id:
+        following=follow_crud.get_following(db,current_user.id)
+        photographer_ids = [f['photographer_id'] for f in following]
+
+        if not photographer_id in photographer_ids:
+            raise HTTPException(status_code=403, detail="Not following this photographer")
+        
     return review_crud.get_reviews_for_photographer(db, photographer_id)
