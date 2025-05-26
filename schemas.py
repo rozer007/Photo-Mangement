@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, validator 
+from fastapi import UploadFile
 from typing import Optional
 from datetime import datetime
 
@@ -16,7 +17,6 @@ class UserCreate(UserBase):
         if v!= "simple" and v!="photographer":
             raise ValueError('User_type must be photographer or simple user')
         return v
-    
     
     @validator('password')
     def validate_password(cls, v):
@@ -47,22 +47,22 @@ class FollowOut(BaseModel):
     class Config:
         from_attribute = True
 
+class PhotoBase(BaseModel):
+    description: Optional[str]
+    tags: Optional[str]
 
-# class UserUpdate(BaseModel):
-#     email: Optional[EmailStr] = None
-#     username: Optional[str] = None
-    
-#     @validator('username')
-#     def validate_username(cls, v):
-#         if v is not None and len(v) < 3:
-#             raise ValueError('Username must be at least 3 characters long')
-#         return v
+class PhotoCreate(PhotoBase):
+    file_size:float
+    pass
 
-# class UserPasswordUpdate(BaseModel):
-#     new_password: str
-    
-#     @validator('new_password')
-#     def validate_password(cls, v):
-#         if len(v) < 6:
-#             raise ValueError('Password must be at least 6 characters long')
-#         return v
+class PhotoOut(PhotoCreate):
+    id: int
+    file_path: str
+    owner_id: int
+    created_at: datetime
+
+    class Config:
+        from_attribute = True
+
+
+

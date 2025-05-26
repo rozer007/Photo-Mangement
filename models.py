@@ -19,10 +19,9 @@ class User(database.Base):
     user_type = Column(Enum(UserType), nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     followers = relationship("Follow", back_populates="photographer", foreign_keys='Follow.photographer_id')
     following = relationship("Follow", back_populates="user", foreign_keys='Follow.user_id')
-    # photos = relationship("Photo", back_populates="owner")
+    photos = relationship("Photo", back_populates="owner")
     # reviews = relationship("Review", back_populates="user")
 
     
@@ -37,4 +36,17 @@ class Follow(database.Base):
     photographer_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="following", foreign_keys=[user_id])
     photographer = relationship("User", back_populates="followers", foreign_keys=[photographer_id])
+
+
+class Photo(database.Base):
+    __tablename__ = "photos"
+    id = Column(Integer, primary_key=True, index=True,autoincrement=True)
+    file_path = Column(String, nullable=False)
+    file_size= Column(Float, nullable=False)
+    description = Column(Text)
+    tags = Column(String)
+    created_at = Column(DateTime)
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="photos")
+    # reviews = relationship("Review", back_populates="photo")
 

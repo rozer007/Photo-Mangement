@@ -15,7 +15,6 @@ def is_photographer(db: Session,photographer_id: int):
     except :
         raise HTTPException(status_code=401, detail="No such photographer ID exists")
 
-
 def is_simple_user(db: Session,user_id: int):
     simple=user_crud.get_user_by_userid(db,user_id)
     return simple.user_type == 'simple'
@@ -25,7 +24,7 @@ def follow_photographer(db: Session, user_id: int, photographer_id: int):
         raise HTTPException(status_code=401, detail="Please enter only photographer ID")
     
     if not is_simple_user(db,user_id):
-        raise HTTPException(status_code=401, detail="Only simple user can follow/unfollow a photographer")
+        raise HTTPException(status_code=403, detail="Only simple user can follow/unfollow a photographer")
         
     exist=check_following(db,user_id,photographer_id)
     if exist:
@@ -43,7 +42,7 @@ def unfollow_photographer(db: Session, user_id: int, photographer_id: int):
         raise HTTPException(status_code=401, detail="Please enter correct/existing photograher ID")
     
     if not is_simple_user(db,user_id):
-        raise HTTPException(status_code=401, detail="Only Simple user can follow/unfollow a photographer")
+        raise HTTPException(status_code=403, detail="Only Simple user can follow/unfollow a photographer")
 
     exist=check_following(db,user_id,photographer_id)
     if not exist:
@@ -57,6 +56,8 @@ def unfollow_photographer(db: Session, user_id: int, photographer_id: int):
 
 def get_followers(db: Session,photographer_id: int):
     result=db.query(models.Follow).filter_by(photographer_id=photographer_id).all()
+    if not len(result):
+        raise HTTPException(status_code=401, detail="No followers")
     final=[]
     for res in result:
         id=res.id
@@ -68,6 +69,8 @@ def get_followers(db: Session,photographer_id: int):
 
 def get_following(db: Session, user_id: int):
     result= db.query(models.Follow).filter_by(user_id=user_id).all()
+    if not len(result):
+        raise HTTPException(status_code=401, detail="No followings")
     final=[]
     for res in result:
         id=res.id

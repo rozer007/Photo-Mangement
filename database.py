@@ -10,7 +10,7 @@ import logging
 # logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 
-DATABASE_URL = "postgresql://postgres:Root@localhost:5432/Management"
+DATABASE_URL = "postgresql://postgres:Root@localhost:5432/management"
 
 # Create MySQL engine with connection pooling
 engine = create_engine(
