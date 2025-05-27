@@ -98,10 +98,18 @@ class ReviewCreate_Photographer(BaseModel):
         return v
     comment: Optional[str]
 
-class ReviewOut(BaseModel):
+class ReviewOut_Photo(BaseModel):
     id: int
     user_id: int
     photo_id: Optional[int]
+    rating: float
+    comment: Optional[str]
+    class Config:
+        from_attribute = True
+
+class ReviewOut_Photographer(BaseModel):
+    id: int
+    user_id: int
     photographer_id: Optional[int]
     rating: float
     comment: Optional[str]

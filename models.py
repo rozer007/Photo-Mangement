@@ -63,8 +63,8 @@ class Share(database.Base):
 class Review(database.Base):
     __tablename__ = "reviews"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    photo_id = Column(Integer, ForeignKey("photos.id"), nullable=True)
-    photographer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"))
+    photo_id = Column(Integer, ForeignKey("photos.id",ondelete="cascade"), nullable=True)
+    photographer_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"), nullable=True)
     rating = Column(Float)
     comment = Column(Text)
