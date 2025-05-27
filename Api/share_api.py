@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta,timezone
 from .. import database,dependencies,schemas
 from ..Crud import share_crud
+import pytz
 
 router = APIRouter()
 
@@ -14,13 +15,8 @@ def share_photo(
     db: Session = Depends(database.get_db),
     current_user=Depends(dependencies.get_current_active_user)
 ):
+    
     expiry = datetime.now(timezone.utc) + timedelta(minutes=expiry_minutes)
-    print(datetime.now(timezone.utc))
-    print(timedelta(minutes=expiry_minutes))
-    print(datetime.now(timezone.utc)+timedelta(minutes=expiry_minutes))
-
-    print(datetime.now(timezone.utc))
-
 
     link = f"share-{photo_id}-{to_user_id}-{int(expiry.timestamp())}"
     return share_crud.create_share(db, photo_id, current_user.id, to_user_id, expiry, link)

@@ -19,7 +19,7 @@ def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int,
 
         if(user.user_type=='photographer'):
             raise HTTPException(status_code=403, detail="Not belongs to you")
-    
+            
         following=follow_crud.get_following(db,from_user_id)
         photographer_ids = [f['photographer_id'] for f in following]
         Photos=[]
@@ -44,16 +44,22 @@ def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int,
     return share
 
 def get_share(db: Session, share_id: int):
+
     return db.query(models.Share).filter(models.Share.id == share_id).first()
 
 def get_valid_share(db: Session, share_id: int):
     share = get_share(db, share_id)
     if share :
 
-        #convert UTC to India Time Zone
         india_tz = pytz.timezone('Asia/Kolkata')
-        expiry = share.expiry.replace(tzinfo=india_tz)
+        # Convert UTC expiry to India time
+        expiry = share.expiry.astimezone(india_tz)
+
         india_time = datetime.now(india_tz)
+        # print(expiry)
+        # print(india_time)
+        # print(expiry > india_time)
+
 
         if expiry > india_time:
             return share
