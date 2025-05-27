@@ -35,8 +35,6 @@ def authenticate_user(db: Session, username: str, password: str):
         return None
     return user
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first() 
 
 
 

@@ -48,13 +48,12 @@ class Photo(database.Base):
     created_at = Column(DateTime)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="photos")
-    # reviews = relationship("Review", back_populates="photo")
 
 
 class Share(database.Base):
     __tablename__ = "shares"
     id = Column(Integer, primary_key=True, index=True)
-    photo_id = Column(Integer, ForeignKey("photos.id"))
+    photo_id = Column(Integer, ForeignKey("photos.id", ondelete="cascade"))
     from_user_id = Column(Integer, ForeignKey("users.id"))
     to_user_id = Column(Integer, ForeignKey("users.id"))
     expiry = Column(DateTime)
@@ -69,5 +68,3 @@ class Review(database.Base):
     photographer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     rating = Column(Float)
     comment = Column(Text)
-    # user = relationship("User", back_populates="reviews")
-    # photo = relationship("Photo", back_populates="reviews") 

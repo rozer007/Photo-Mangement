@@ -67,7 +67,7 @@ def get_followers(db: Session,photographer_id: int):
         final.append({"Id":id,"photographer_ID":photographer_id,"User_ID":user_id,'username':user_name})
     return final 
 
-def get_following(db: Session, user_id: int):
+def get_following(db: Session, user_id: int):    
     result= db.query(models.Follow).filter_by(user_id=user_id).all()
     if not len(result):
         raise HTTPException(status_code=401, detail="No followings")

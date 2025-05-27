@@ -1,5 +1,4 @@
 from pydantic import BaseModel, EmailStr, validator 
-from fastapi import UploadFile
 from typing import Optional
 from datetime import datetime
 

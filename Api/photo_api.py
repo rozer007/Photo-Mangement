@@ -4,6 +4,7 @@ from ..Crud import photo_crud,follow_crud
 from .. import dependencies
 from .. import schemas,database
 from .. Services import storage, ai
+from .. import models
 router=APIRouter()
 
 @router.post("/upload")
@@ -61,6 +62,11 @@ def get_photo(photo_id: int, db: Session = Depends(database.get_db), current_use
         raise HTTPException(status_code=404, detail="Photo not found")
     # Only allow if user follows the photographer
     if photo.owner_id != current_user.id: # check if it the owner
+        
+        user=db.query(models.User).filter_by(id=current_user.id).first()
+        if(user.user_type=='photographer'):
+            raise HTTPException(status_code=403, detail="Not belongs to you")
+        
         following = follow_crud.get_following(db, current_user.id)
         if not any(f['photographer_id'] == photo.owner_id for f in following):
             raise HTTPException(status_code=403, detail="Not allowed to view this photo")

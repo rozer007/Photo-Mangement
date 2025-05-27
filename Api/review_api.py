@@ -70,4 +70,4 @@ def get_reviews_for_photographer(photographer_id: int, db: Session = Depends(dat
         if not photographer_id in photographer_ids:
             raise HTTPException(status_code=403, detail="Not following this photographer")
         
-    return review_crud.get_reviews_for_photographer(db, photographer_id)
+    return review_crud.get_reviews_for_photographer(db, photographer_id) 

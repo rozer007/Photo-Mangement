@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 import os
 from .. import models, schemas
 from datetime import datetime,timezone
@@ -26,6 +27,9 @@ def delete_photo(db: Session, photo_id: int, owner_id: int):
             file_deleted = True
         else:
             file_deleted = False
+
+        if not file_deleted:
+            raise HTTPException(status_code=404, detail="Error while fetching the Photo from database")
         
         if file_deleted:
             db.delete(photo)
