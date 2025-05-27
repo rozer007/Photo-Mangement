@@ -1,11 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from passlib.context import CryptContext
-from sqlalchemy.orm import Session
 from . import database
 from .Api import auth_api,follow_api,photo_api,share_api,review_api,ai_api
-from . import schemas,dependencies, database
-from .Crud import follow_crud
-from . import models
+from . import database
+
 
 app = FastAPI()
 

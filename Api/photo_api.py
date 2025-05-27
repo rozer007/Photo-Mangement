@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..Crud import photo_crud,follow_crud
 from .. import dependencies
 from .. import schemas,database
-from .. Services import ai_service, storage
+from .. Services import storage
 from .. import models
 router=APIRouter()
 

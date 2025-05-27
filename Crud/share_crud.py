@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from .. import models
 from ..Crud import photo_crud,follow_crud,user_crud
-from datetime import datetime, timezone
+from datetime import datetime
 import pytz
 
 def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int, expiry: datetime, link: str):

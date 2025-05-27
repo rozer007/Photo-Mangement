@@ -2,12 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
-# from config import DATABASE_URL
-import logging
-
-# Configure logging
-# logging.basicConfig()
-# logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 
 DATABASE_URL = "postgresql://postgres:Root@localhost:5432/management"
@@ -35,18 +29,16 @@ def get_db():
     finally:
         db.close()
 
+def test_connection():
+    """Test database connection"""
+    try:
+        with engine.connect() as connection:
+            if engine.connect():
+                print("✅ Database connection successful!")
+    except Exception as e:
+        print(f"❌ Database connection failed: {e}")
+    
 def create_database():
     """Create database tables"""
+    test_connection()
     Base.metadata.create_all(bind=engine)
-
-# def test_connection():
-#     """Test database connection"""
-#     try:
-#         with engine.connect() as connection:
-#             result = connection.execute("select version()")
-#             print(result)
-#             print("✅ Database connection successful!")
-#             return True
-#     except Exception as e:
-#         print(f"❌ Database connection failed: {e}")
-#         return False

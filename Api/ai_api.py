@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
-from ..Crud import user_crud,photo_crud
+from ..Crud import photo_crud
 from ..Services import ai_service
-from .. import schemas,database,models
+from .. import database
 from .. import dependencies
 
 
