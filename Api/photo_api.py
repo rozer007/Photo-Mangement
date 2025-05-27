@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..Crud import photo_crud,follow_crud
 from .. import dependencies
 from .. import schemas,database
-from .. Services import storage, ai
+from .. Services import ai_service, storage
 from .. import models
 router=APIRouter()
 
@@ -19,12 +19,7 @@ def upload_photo(
     photo_file = storage.save_photo(file)
     size =photo_file[1]
     file_path= photo_file[0]
-    # AI add-ons
-    tags = ai.generate_tags(file_path)
-    description = ai.generate_description(photo_file[0])
     photo = schemas.PhotoCreate(
-        tags = tags,
-        description = description,
         file_size=size
 
     )

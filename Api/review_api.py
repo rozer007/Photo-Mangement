@@ -10,13 +10,7 @@ def add_review_photo(review: schemas.ReviewCreate_Photo, db: Session = Depends(d
     if current_user.user_type !='simple':
         raise HTTPException(status_code=403, detail="Only simple user can review")
     
-    following=follow_crud.get_following(db,current_user.id)
-    photographer_ids = [f['photographer_id'] for f in following]
-    Photos=[]
-    for pid in photographer_ids:
-        Photos.extend(photo_crud.get_photos_by_owner(db, pid))
-
-    photos_id=[p.id for p in Photos]
+    photos_id=photo_crud.users_following_photos_id(db,current_user)
 
     if not review.photo_id in photos_id:
         raise HTTPException(status_code=403, detail="No such photo exist/Not following this photographer")
@@ -51,13 +45,7 @@ def get_reviews_for_photo(photo_id: int, db: Session = Depends(database.get_db),
         raise HTTPException(status_code=404, detail="No such photo")
     
     if current_user.id!= photo.owner_id:
-        following=follow_crud.get_following(db,current_user.id)
-        photographer_ids = [f['photographer_id'] for f in following]
-        Photos=[]
-        for pid in photographer_ids:
-            Photos.extend(photo_crud.get_photos_by_owner(db, pid))
-
-        photos_id=[p.id for p in Photos]
+        photos_id=photo_crud.users_following_photos_id(db,current_user)
 
         if not photo_id in photos_id:
             raise HTTPException(status_code=403, detail="No such photo exist/Not following this photographer")
@@ -84,3 +72,11 @@ def get_reviews_for_photographer(photographer_id: int, db: Session = Depends(dat
             raise HTTPException(status_code=403, detail="Not following this photographer")
         
     return review_crud.get_reviews_for_photographer(db, photographer_id) 
+
+@router.delete("/photographer/{photographer_id}", response_model=schemas.ReviewOut_Photographer)
+def delete_reviews_for_photographer(photographer_id: int, db: Session = Depends(database.get_db),current_user=Depends(dependencies.get_current_active_user)):
+   return review_crud.delete_photographer_review(db,photographer_id,current_user.id)
+
+@router.delete("/photos/{photo_id}", response_model=schemas.ReviewOut_Photo)
+def delete_reviews_for_photo(photo_id: int, db: Session = Depends(database.get_db),current_user=Depends(dependencies.get_current_active_user)):
+   return review_crud.delete_photo_review(db,photo_id,current_user.id)

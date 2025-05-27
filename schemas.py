@@ -46,11 +46,11 @@ class FollowOut(BaseModel):
     class Config:
         from_attribute = True
 
-class PhotoBase(BaseModel):
-    description: Optional[str]
-    tags: Optional[str]
+# class PhotoBase(BaseModel):
+#     description: Optional[str]
+#     tags: Optional[str]
 
-class PhotoCreate(PhotoBase):
+class PhotoCreate(BaseModel):
     file_size:float
     pass
 

@@ -43,8 +43,6 @@ class Photo(database.Base):
     id = Column(Integer, primary_key=True, index=True,autoincrement=True)
     file_path = Column(String, nullable=False)
     file_size= Column(Float, nullable=False)
-    description = Column(Text)
-    tags = Column(String)
     created_at = Column(DateTime)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="photos")

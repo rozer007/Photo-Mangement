@@ -3,12 +3,11 @@ from fastapi import HTTPException
 import os
 from .. import models, schemas
 from datetime import datetime,timezone
+from..Crud import follow_crud
 
 def create_photo(db: Session, photo: schemas.PhotoCreate, owner_id: int, file_path: str):
     db_photo = models.Photo(
         file_path=file_path,
-        description=photo.description,
-        tags=photo.tags,
         file_size=photo.file_size,
         created_at=datetime.now(timezone.utc),
         owner_id=owner_id
@@ -46,3 +45,14 @@ def get_photo(db: Session, photo_id: int):
 
 def get_photos_by_owner(db: Session, owner_id: int):
     return db.query(models.Photo).filter(models.Photo.owner_id == owner_id).all()
+
+def users_following_photos_id(db:Session,current_user):
+    following=follow_crud.get_following(db,current_user.id)
+    photographer_ids = [f['photographer_id'] for f in following]
+    Photos=[]
+    for pid in photographer_ids:
+        Photos.extend(get_photos_by_owner(db, pid))
+
+    photos_id=[p.id for p in Photos]
+
+    return photos_id

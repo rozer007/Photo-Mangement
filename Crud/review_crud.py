@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 from .. import models, schemas
 
 def create_review_photo(db: Session, review: schemas.ReviewOut_Photo,current_user):
@@ -37,3 +38,21 @@ def get_reviews_for_photo(db: Session, photo_id: int):
 
 def get_reviews_for_photographer(db: Session, photographer_id: int):
     return db.query(models.Review).filter(models.Review.photographer_id == photographer_id).all() 
+
+def delete_photographer_review(db: Session, photographer_id: int,user_id:int):
+    review=check_reviews_for_photographer(db,photographer_id,user_id)
+    if not review:
+        raise HTTPException(status_code=403, detail="No reviews")
+    
+    db.delete(review)
+    db.commit()
+    return review
+
+def delete_photo_review(db: Session, photo_id: int,user_id:int):
+    review=check_reviews_for_photo(db,photo_id,user_id)
+    if not review:
+        raise HTTPException(status_code=403, detail="No reviews ")
+    
+    db.delete(review)
+    db.commit()
+    return review
