@@ -45,6 +45,9 @@ def get_reviews_for_photo(photo_id: int, db: Session = Depends(database.get_db),
         raise HTTPException(status_code=404, detail="No such photo")
     
     if current_user.id!= photo.owner_id:
+        if(current_user.user_type=='photographer'):
+            raise HTTPException(status_code=403, detail="Not allowed to view review of this photo")
+
         photos_id=photo_crud.users_following_photos_id(db,current_user)
 
         if not photo_id in photos_id:
@@ -65,6 +68,9 @@ def get_reviews_for_photographer(photographer_id: int, db: Session = Depends(dat
         raise HTTPException(status_code=404, detail="No such photographer")
     
     if current_user.id!= photographer_id:
+        if(current_user.user_type=='photographer'):
+            raise HTTPException(status_code=403, detail="Cannot view other photographer's review")
+        
         following=follow_crud.get_following(db,current_user.id)
         photographer_ids = [f['photographer_id'] for f in following]
 

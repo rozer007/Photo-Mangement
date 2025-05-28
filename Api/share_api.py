@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta,timezone
 from .. import database,dependencies,schemas
-from ..Crud import share_crud
-import pytz
+from ..Crud import share_crud,photo_crud
 
 router = APIRouter()
 
@@ -29,6 +28,11 @@ def get_shared_photo(share_id: int, db: Session = Depends(database.get_db), curr
     # Only allow if current user is the recipient and follows the photographer
     if share.to_user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not allowed to view this shared photo")
+    
+    photos_ids=photo_crud.users_following_photos_id(db,current_user)
+
+    if share.photo_id not in photos_ids:
+        raise HTTPException(status_code=403, detail="Not following the photographer")
     return share 
 
 @router.delete("/{share_id}",response_model=schemas.ShareOut)
