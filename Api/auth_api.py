@@ -51,7 +51,7 @@ def logout(response: Response,current_user:Session=Depends(dependencies.get_curr
         raise credentials_exception
     
 @router.get("/refresh")
-def refresh(response:Response ,request:Request,current_user:Session=Depends(dependencies.get_current_user),db: Session = Depends(database.get_db)):
+def refresh(response:Response ,request:Request,current_user:Session=Depends(dependencies.get_current_user)):
     refresh_token = request.cookies.get("access_token")
 
     if not refresh_token:
