@@ -21,7 +21,7 @@ class User(database.Base):
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     followers = relationship("Follow", back_populates="photographer", foreign_keys='Follow.photographer_id')
     following = relationship("Follow", back_populates="user", foreign_keys='Follow.user_id')
-    photos = relationship("Photo", back_populates="owner")
+    # photos = relationship("Photo", back_populates="owner")
     # reviews = relationship("Review", back_populates="user")
 
     
@@ -45,7 +45,7 @@ class Photo(database.Base):
     file_size= Column(Float, nullable=False)
     created_at = Column(DateTime)
     owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="photos")
+    # owner = relationship("User", back_populates="photos")
 
 
 class Share(database.Base):
@@ -64,6 +64,7 @@ class Review(database.Base):
     user_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"))
     photo_id = Column(Integer, ForeignKey("photos.id",ondelete="cascade"), nullable=True)
     photographer_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"), nullable=True)
+    # user=relationship('users',back_populates="reviews")
     rating = Column(Float)
     comment = Column(Text)
 
