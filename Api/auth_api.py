@@ -51,13 +51,15 @@ def logout(response: Response,current_user:Session=Depends(dependencies.get_curr
         raise credentials_exception
     
 @router.get("/refresh")
-def refresh(response:Response ,request:Request,current_user:Session=Depends(dependencies.get_current_user)):
+def refresh(response:Response ,request:Request):
     refresh_token = request.cookies.get("access_token")
 
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Missing refresh token")
+    
+    user_id=auth_service.verify_token(refresh_token)
 
-    token_data = {"sub": str(current_user.id)}
+    token_data = {"sub": str(user_id)}
     access_token = auth_service.create_access_token(token_data)
     refresh_token_new = auth_service.create_refresh_token(token_data)
 
