@@ -74,3 +74,14 @@ class blacklist(database.Base):
     id= Column(Integer,primary_key=True,index=True)
     blacklist_token= Column(String,unique=True,index=True)
     blacklist_on=Column(DateTime,server_default=func.now())
+
+
+class MagicLink(database.Base):
+    __tablename__ = "magic_links"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, nullable=False, index=True)
+    token = Column(String, unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -1,13 +1,15 @@
-from fastapi import Depends, HTTPException, APIRouter,Response,Cookie,Request
+from fastapi import Depends, HTTPException, APIRouter,Response,Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+from fastapi.responses import RedirectResponse
 from typing import Optional
 from typing import Annotated
 from ..Crud import user_crud
 from ..Services import auth_service
 from .. import schemas,database,models
 from .. import dependencies
+from ..Services import magic_link_service
 
 
 router =APIRouter()
@@ -46,13 +48,14 @@ def logout(response: Response,current_user:Session=Depends(dependencies.get_curr
     if(current_user):
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
+        response.delete_cookie("magic_token")
         return {"message": "Logged out"}
     else:
         raise credentials_exception
     
-@router.get("/refresh")
+@router.get("/refresh")#,include_in_schema=False)
 def refresh(response:Response ,request:Request):
-    refresh_token = request.cookies.get("access_token")
+    refresh_token = request.cookies.get("refresh_token")
 
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Missing refresh token")
@@ -84,4 +87,48 @@ def refresh(response:Response ,request:Request):
 #         }
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail="Logout failed")
+
+
+@router.post('/magic_link')
+def magic_login_link(response:Response,email:str,db:Session=Depends(database.get_db)):
+    user=user_crud.get_user_by_email(db,email)
+
+    if not user:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found. Please register first."
+                )
+    
+    token,magic_link_url=magic_link_service.generate_magic_link(email,db)
+    response.set_cookie("magic_token", token, httponly=True, secure=False, samesite="lax",max_age=600)
+
+
+    return {
+            "Token": token,
+            "magic_link":magic_link_url,
+            "email": email
+    }
+
+
+# hidden endpoint
+@router.get('/verify_magic_login',response_model=schemas.Token)#,include_in_schema=False)
+def magic_login(request:Request,response:Response,db:Session=Depends(database.get_db)):
+
+    magic_token= refresh_token = request.cookies.get("magic_token")
+    print(magic_token)
+    email=magic_link_service.verify_magic_token(magic_token,db)
+
+    user=user_crud.get_user_by_email(db,email)
+
+    token_data = {"sub": str(user.id)}
+
+    access_token = auth_service.create_access_token(token_data)
+    refresh_token = auth_service.create_refresh_token(token_data)
+
+    response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="lax",max_age=900)
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="lax",max_age=604800)
+
+    # result=RedirectResponse(url='http://127.0.0.1:8000')
+
+    return schemas.Token(access_token=access_token,refresh_token=refresh_token,token_type="bearer")
 
