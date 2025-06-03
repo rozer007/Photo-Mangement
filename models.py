@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, D
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from . import database
+# from database import Base
 
 import enum
 
