@@ -5,6 +5,7 @@ from typing import Annotated
 from ..Crud import user_crud
 from ..Services import auth_service
 from .. import schemas,database,models
+from .. import dependencies
 
 
 router =APIRouter()
@@ -26,3 +27,17 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Sessio
     token_data = {"sub": str(user.id)}
     access_token = auth_service.create_access_token(token_data)
     return schemas.Token(access_token=access_token, token_type="bearer")
+
+@router.post("/logout")
+def logout(db:Session=Depends(database.get_db),token:str=Depends(dependencies.oauth2_scheme),current_user=Depends(dependencies.get_current_active_user)):
+    try:
+        # Add current token to blacklist
+        user_crud.blacklist_token(db, token)
+        
+        return {
+            "message": "Successfully logged out",
+            "status": "success",
+            "user_id": current_user.id,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Logout failed")

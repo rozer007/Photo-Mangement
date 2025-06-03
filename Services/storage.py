@@ -11,7 +11,7 @@ def save_photo(file) -> str:
     file_content=file.file.read()
     with open(file_path, "wb") as buffer:
         buffer.write(file_content)
-    size= round(len(file_content) / (1024 * 1024), 2)
+    size= round(file.size / (1024 * 1024), 2)
     return file_path,size
 
 # def get_photo_url(file_path: str) -> str:

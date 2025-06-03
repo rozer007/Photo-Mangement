@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from . import database,models
 from .Services import auth_service
+from .Crud import user_crud
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -15,6 +16,10 @@ def get_current_user(token:str = Depends(oauth2_scheme), db: Session = Depends(d
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    if user_crud.is_token_blacklisted(db,token):
+         raise credentials_exception
+    
     user_id: int = auth_service.verify_token(token)
 
     if user_id is None:

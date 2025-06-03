@@ -66,3 +66,10 @@ class Review(database.Base):
     photographer_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"), nullable=True)
     rating = Column(Float)
     comment = Column(Text)
+
+
+class blacklist(database.Base):
+    __tablename__='blacklists'
+    id= Column(Integer,primary_key=True,index=True)
+    blacklist_token= Column(String,unique=True,index=True)
+    blacklist_on=Column(DateTime,server_default=func.now())

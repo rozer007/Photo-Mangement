@@ -56,9 +56,6 @@ def get_valid_share(db: Session, share_id: int):
         expiry = share.expiry.astimezone(india_tz)
 
         india_time = datetime.now(india_tz)
-        # print(expiry)
-        # print(india_time)
-        # print(expiry > india_time)
 
 
         if expiry > india_time:

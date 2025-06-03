@@ -35,7 +35,16 @@ def authenticate_user(db: Session, username: str, password: str):
         return None
     return user
 
+def blacklist_token(db:Session,token:str):
+    db_token=models.blacklist(blacklist_token=token)
+    db.add(db_token)
+    db.commit()
+    db.refresh(db_token)
+    return db_token
 
+def is_token_blacklisted(db: Session, token: str) -> bool:
+    """Check if token is blacklisted"""
+    return db.query(models.blacklist).filter(models.blacklist.blacklist_token == token).first() is not None
 
 
 
