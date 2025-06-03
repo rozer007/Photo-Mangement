@@ -5,12 +5,12 @@ from ..Crud import photo_crud,follow_crud,user_crud
 from datetime import datetime
 import pytz
 
-def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int, expiry: datetime, link: str):
+def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int,opened:bool, expiry: datetime, link: str):
     photo=photo_crud.get_photo(db,photo_id)
+    
     if not photo:
         raise HTTPException(status_code=404, detail="No such photo found")
-    
-    user=db.query(models.User).filter_by(id=to_user_id).first()
+    user=user_crud.get_user_by_userid(db,to_user_id)
     if not user:
         raise HTTPException(status_code=404, detail="No user with this id")
     
@@ -19,6 +19,7 @@ def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int,
 
         if(user.user_type=='photographer'):
             raise HTTPException(status_code=403, detail="Not belongs to you")
+        
             
         following=follow_crud.get_following(db,from_user_id)
         photographer_ids = [f['photographer_id'] for f in following]
@@ -35,6 +36,7 @@ def create_share(db: Session, photo_id: int, from_user_id: int, to_user_id: int,
         photo_id=photo_id,
         from_user_id=from_user_id,
         to_user_id=to_user_id,
+        opened=opened,
         expiry=expiry,
         link=link
     )
@@ -49,14 +51,15 @@ def get_share(db: Session, share_id: int):
 
 def get_valid_share(db: Session, share_id: int):
     share = get_share(db, share_id)
-    if share :
-
+    if share:
+        if share.opened ==True:
+            raise HTTPException(status_code=404, detail="Already Opened")
+        
         india_tz = pytz.timezone('Asia/Kolkata')
         # Convert UTC expiry to India time
         expiry = share.expiry.astimezone(india_tz)
 
         india_time = datetime.now(india_tz)
-
 
         if expiry > india_time:
             return share

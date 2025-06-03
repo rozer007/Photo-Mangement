@@ -115,7 +115,7 @@ def magic_login_link(response:Response,email:str,db:Session=Depends(database.get
 def magic_login(request:Request,response:Response,db:Session=Depends(database.get_db)):
 
     magic_token= refresh_token = request.cookies.get("magic_token")
-    print(magic_token)
+    # print(magic_token)
     email=magic_link_service.verify_magic_token(magic_token,db)
 
     user=user_crud.get_user_by_email(db,email)
