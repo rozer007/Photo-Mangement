@@ -22,7 +22,7 @@ class User(database.Base):
     followers = relationship("Follow", back_populates="photographer", foreign_keys='Follow.photographer_id')
     following = relationship("Follow", back_populates="user", foreign_keys='Follow.user_id')
     photos = relationship("Photo", back_populates="owner")
-    # reviews = relationship("Review", back_populates="user")
+    reviews = relationship("Review", back_populates="user",foreign_keys='Review.user_id')
 
     
     
@@ -54,6 +54,7 @@ class Share(database.Base):
     photo_id = Column(Integer, ForeignKey("photos.id", ondelete="cascade"))
     from_user_id = Column(Integer, ForeignKey("users.id"))
     to_user_id = Column(Integer, ForeignKey("users.id"))
+    opened=Column(Boolean)
     expiry = Column(DateTime)
     link = Column(String)
 
@@ -64,6 +65,7 @@ class Review(database.Base):
     user_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"))
     photo_id = Column(Integer, ForeignKey("photos.id",ondelete="cascade"), nullable=True)
     photographer_id = Column(Integer, ForeignKey("users.id",ondelete="cascade"), nullable=True)
+    user=relationship('User',back_populates="reviews",foreign_keys=[user_id])
     rating = Column(Float)
     comment = Column(Text)
 
@@ -73,3 +75,14 @@ class blacklist(database.Base):
     id= Column(Integer,primary_key=True,index=True)
     blacklist_token= Column(String,unique=True,index=True)
     blacklist_on=Column(DateTime,server_default=func.now())
+
+
+class MagicLink(database.Base):
+    __tablename__ = "magic_links"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, nullable=False, index=True)
+    token = Column(String, unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
