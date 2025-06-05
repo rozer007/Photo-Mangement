@@ -82,7 +82,7 @@ class MagicLink(database.Base):
     __tablename__ = "magic_links"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, nullable=False, index=True)
+    email = Column(String,ForeignKey("users.email"))
     token = Column(String, unique=True, nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
     used = Column(Boolean, default=False)

@@ -30,8 +30,7 @@ class UserCreate(UserBase):
         return v
     
 class UserOut(UserBase):
-    id: int
-    username :str
+    id: int 
     class Config:
         from_attribute = True
     

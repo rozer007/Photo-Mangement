@@ -33,7 +33,7 @@ def login(response: Response,form_data: Annotated[OAuth2PasswordRequestForm, Dep
     refresh_token = auth_service.create_refresh_token(token_data)
 
     response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="lax",max_age=900)
-    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="lax",max_age=604800)
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="lax",max_age=106800)
 
     return schemas.Token(access_token=access_token,refresh_token=refresh_token,token_type="bearer")
 
@@ -66,28 +66,13 @@ def refresh(response:Response ,request:Request):
     access_token = auth_service.create_access_token(token_data)
     refresh_token_new = auth_service.create_refresh_token(token_data)
 
-    response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="lax",max_age=1800)
-    response.set_cookie("refresh_token", refresh_token_new, httponly=True, secure=False, samesite="lax",max_age=604800)
+    response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="lax",max_age=900)
+    response.set_cookie("refresh_token", refresh_token_new, httponly=True, secure=False, samesite="lax",max_age=106800)
 
     return {
         "refresh_token": refresh_token,
         "message":"Token refresh"
             }
-
-# @router.post("/logout")
-# def logout(db:Session=Depends(database.get_db),token:str=Depends(dependencies.oauth2_scheme),current_user=Depends(dependencies.get_current_active_user)):
-#     try:
-#         # Add current token to blacklist
-#         user_crud.blacklist_token(db, token)
-        
-#         return {
-#             "message": "Successfully logged out",
-#             "status": "success",
-#             "user_id": current_user.id,
-#         }
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="Logout failed")
-
 
 @router.post('/magic_link')
 def magic_login_link(response:Response,email:str,db:Session=Depends(database.get_db)):
@@ -126,9 +111,14 @@ def magic_login(request:Request,response:Response,db:Session=Depends(database.ge
     refresh_token = auth_service.create_refresh_token(token_data)
 
     response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="lax",max_age=900)
-    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="lax",max_age=604800)
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="lax",max_age=106800)
 
     # result=RedirectResponse(url='http://127.0.0.1:8000')
 
     return schemas.Token(access_token=access_token,refresh_token=refresh_token,token_type="bearer")
+
+@router.get('/profile',response_model=schemas.UserOut)
+def get_profile(current_user:Session=Depends(dependencies.get_current_user)):
+    return current_user
+
 

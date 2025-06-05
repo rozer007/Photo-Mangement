@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from . import database
 from .Api import auth_api,follow_api,photo_api,share_api,review_api,ai_api
 from . import database
-
-
 app = FastAPI()
 
 database.create_database()

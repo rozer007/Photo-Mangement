@@ -19,6 +19,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
+    print(expire)
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -27,18 +28,18 @@ def create_refresh_token(data: dict, expires_delta: timedelta = None):
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=REFRESH_TOKEN_EXPIRE_DAYS)
+    print(expire)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def decode_access_token(token: str):
     credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
+        status_code=status.HTTP_401_UNAUTHORIZED, 
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if payload is None:
@@ -56,14 +57,9 @@ def verify_token(token):
    
     try:
         payload = decode_access_token(token)
-
-        # exp = payload.get("exp")
-        # print(datetime.now(timezone.utc).timestamp() )
-        # print(datetime.now(timezone.utc).timestamp() > exp)
-
-        # # Check if the token has expired
-        # if datetime.now(timezone.utc).timestamp() > exp:
-        #     raise credentials_exception
+        
+        if payload is None:
+            raise credentials_exception
         
         user_id: int = payload.get("sub")
         if user_id is None:

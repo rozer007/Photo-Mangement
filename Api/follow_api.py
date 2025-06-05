@@ -34,3 +34,10 @@ def get_followings(db:Session = Depends(database.get_db), current_user=Depends(d
         return follow_crud.get_following(db,current_user.id)
     else:
         raise HTTPException(status_code=403, detail="Must be simple user")
+
+@router.get("/followers_OauthDemo")
+def get_photographer_follower(db:Session = Depends(database.get_db), current_user=Depends(dependencies.get_current_user_oauth2_scheme)):
+    if current_user.user_type == 'photographer':
+        return follow_crud.get_followers(db,current_user.id)
+    else:
+        raise HTTPException(status_code=403, detail="Must be photographer")

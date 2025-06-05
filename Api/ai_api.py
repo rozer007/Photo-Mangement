@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from ..Crud import photo_crud
-from ..Services import ai_service
+from ..Services import ai_service,llm_service
 from .. import database
 from .. import dependencies
 
@@ -35,3 +35,8 @@ def generate_image_description(photo_id:int,db: Session = Depends(database.get_d
             raise HTTPException(status_code=403, detail="No such photo exist/Not following this photographer")
     
     return ai_service.generate_tags(photo.file_path)
+
+
+@router.get('/test')
+def generate_image():
+    return llm_service.run()
